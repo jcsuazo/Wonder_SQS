@@ -11,5 +11,4 @@ class NodeQueue {
     this.ReceiptHandle = '';
   }
 }
-
 export default NodeQueue;

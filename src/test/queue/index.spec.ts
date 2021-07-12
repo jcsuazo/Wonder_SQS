@@ -1,8 +1,5 @@
-import { expect, assert } from 'chai';
-import request from 'supertest';
+import { expect } from 'chai';
 import Queue from '../../lib/queue';
-const should = require('chai').should(); //actually call the function
-// const assert = require('chai').assert(); //actually call the function
 
 import createServer from '../../server';
 
@@ -149,64 +146,5 @@ describe('queue core functionality', function () {
         }
       })
       .catch((e) => done(e));
-    // const consumerMessages = await myQueue.getQueueMessageBodies();
-    // consumerMessages.forEach(async (message) => {
-    //   message = consumerMessages[5];
-    //   const ReceiptHandle = message.ReceiptHandle;
-    //   const deleteMessage: any = await myQueue.dequeue(ReceiptHandle);
-    //   console.log('enter');
-    //   results.push(deleteMessage.MessageBody);
-    // });
-    // console.log('call');
-    // expect(results.length).to.equal(15);
   });
 });
-// describe('queue test', () => {
-//   it('/queue responds with 201', (done) => {
-//     request(app).post('/queues').expect(201, done);
-//   });
-
-//   it('should add a queue', async () => {
-//     const query = {
-//       MessageBody: 'test1',
-//     };
-//     const res = await request(app)
-//       .post('/queues')
-//       .send(query)
-//       .set('Accept', 'application/json');
-//     expect(res.body).to.have.all.keys('MessageId');
-//   });
-
-//   it('should return all queues values', async () => {
-//     const query = {
-//       MessageBody: 'test2',
-//     };
-//     await request(app)
-//       .post('/queues')
-//       .send(query)
-//       .set('Accept', 'application/json');
-
-//     const res = await request(app).get('/queues');
-//     let test = res.body.map(
-//       (message: { MessageBody: string; MessageId: string }) =>
-//         message.MessageBody,
-//     );
-//     expect(test).to.be.eql(['test1', 'test2']);
-//   });
-
-//   it('should return message upto messageMax', async () => {
-//     for (let i = 0; i < 20; i++) {
-//       await request(app)
-//         .post('/queues')
-//         .send({ MessageBody: `test # ${i}` })
-//         .set('Accept', 'application/json');
-//     }
-
-//     const res = await request(app).get('/queues');
-//     expect(res.body.length).to.be.eql(queue.messageMax);
-//   });
-
-//   // it('/auth responds with 200', (done) => {
-//   //   request(app).get('/auth').expect(200, done);
-//   // });
-// });

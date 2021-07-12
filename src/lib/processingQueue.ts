@@ -1,32 +1,26 @@
 import NodeQueue from './NodeQueue';
-// interface ProcessingQueueInterface {
-//   uuid(): ProcessingQueue;
-// }
-// let klk: uuid() = uuid();
-// let obj: ProcessingQueueInterface = {
-//   klk: new ProcessingQueue(),
-// };
+
 class ProcessingQueue {
-  time: number;
+  // time: number;
   first: NodeQueue | null;
   last: NodeQueue | null;
   size: number;
-  visibilityAllowTime: number;
-  messageMax: Number;
+  // visibilityAllowTime: number;
+  // messageMax: Number;
 
   constructor(
     first: NodeQueue,
     last: NodeQueue,
     size: number,
-    visibilityAllowTime: number = 10,
-    messageMax: number = 10,
+    // visibilityAllowTime: number = 1,
+    // messageMax: number = 10,
   ) {
-    this.time = new Date().getTime();
+    // this.time = new Date().getTime();
     this.first = first;
     this.last = last;
     this.size = size;
-    this.visibilityAllowTime = visibilityAllowTime;
-    this.messageMax = messageMax;
+    // this.visibilityAllowTime = visibilityAllowTime;
+    // this.messageMax = messageMax;
   }
 
   dequeue(): NodeQueue | null {
@@ -51,8 +45,8 @@ class ProcessingQueue {
     return new Promise((resolve, rej) => {
       let current = this.first;
       let previous = this.first;
-      let count = 0;
-      while (current && count < this.messageMax) {
+      // let count = 0;
+      while (current) {
         if (current.ReceiptHandle === ReceiptHandle) {
           if (current.MessageId === this.first?.MessageId) {
             this.dequeue();
@@ -65,7 +59,7 @@ class ProcessingQueue {
               current.next = null;
 
               if (previous) previous.next = next;
-              console.log(previous);
+              // console.log(previous);
             }
             this.size--;
           }
@@ -73,7 +67,7 @@ class ProcessingQueue {
         }
         previous = current;
         current = current.next;
-        count++;
+        // count++;
       }
       resolve(current);
     });

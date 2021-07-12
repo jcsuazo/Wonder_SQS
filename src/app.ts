@@ -1,6 +1,5 @@
 import 'dotenv/config';
 import express, { Application, Request, Response, NextFunction } from 'express';
-// import Queue from './lib/queue';
 import createServer from './server';
 
 const startServer = () => {
