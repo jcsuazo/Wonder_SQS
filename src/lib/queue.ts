@@ -264,6 +264,7 @@ class Queue {
     let current = this.first;
     let currentQueue = [];
     let visibilityAllowTime = this.visibilityAllowTime;
+    let messageMax = this.messageMax;
     let processingQueues = this.processingQueues;
     while (current) {
       // console.log(current.MessageBody);
@@ -279,9 +280,10 @@ class Queue {
       }
     }
     return {
+      visibilityAllowTime,
+      messageMax,
       currentQueue,
       processingQueues,
-      visibilityAllowTime,
     };
   }
 

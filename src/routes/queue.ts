@@ -17,9 +17,9 @@ router.post('/', (req: Request, res: Response) => {
 });
 
 //@route POST /
-//@desc Change queue settings
+//@desc Change queue configurations
 //@access PUBLIC
-router.post('/settings', (req: Request, res: Response) => {
+router.post('/configurations', (req: Request, res: Response) => {
   let messageMax = Math.floor(Number(req.body.messageMax));
   let visibilityAllowTime = Math.floor(Number(req.body.visibilityAllowTime));
   if (!messageMax || messageMax === 0) {
@@ -28,7 +28,10 @@ router.post('/settings', (req: Request, res: Response) => {
   if (!visibilityAllowTime || visibilityAllowTime === 0) {
     visibilityAllowTime = queue.visibilityAllowTime;
   }
+  messageMax = messageMax > 50 ? 50 : messageMax;
+  visibilityAllowTime = visibilityAllowTime > 1200 ? 1200 : visibilityAllowTime;
   queue.changeSettings(messageMax, visibilityAllowTime);
+  res.status(201).json({ messageMax, visibilityAllowTime });
 });
 
 //@route GET /
@@ -81,6 +84,6 @@ router.get('/migrate', async (req: Request, res: Response) => {
 //@access PUBLIC
 router.get('/show', async (req: Request, res: Response) => {
   let data = queue.show();
-  res.send(data);
+  res.status(200).json(data);
 });
 export default router;
