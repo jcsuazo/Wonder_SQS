@@ -16,6 +16,21 @@ router.post('/', (req: Request, res: Response) => {
   //   res.status(201).json({ id: '1', value: 'hello' });
 });
 
+//@route POST /
+//@desc Change queue settings
+//@access PUBLIC
+router.post('/settings', (req: Request, res: Response) => {
+  let messageMax = Math.floor(Number(req.body.messageMax));
+  let visibilityAllowTime = Math.floor(Number(req.body.visibilityAllowTime));
+  if (!messageMax || messageMax === 0) {
+    messageMax = queue.messageMax;
+  }
+  if (!visibilityAllowTime || visibilityAllowTime === 0) {
+    visibilityAllowTime = queue.visibilityAllowTime;
+  }
+  queue.changeSettings(messageMax, visibilityAllowTime);
+});
+
 //@route GET /
 //@desc Send messages to a consumer default 10
 //@access PUBLIC

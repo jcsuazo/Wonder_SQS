@@ -107,7 +107,10 @@ class Queue {
     this.visibilityAllowTime = visibilityAllowTime;
     this.processingQueues = {};
   }
-
+  changeSettings(messageMax: number, visibilityAllowTime: number) {
+    this.messageMax = messageMax;
+    this.visibilityAllowTime = visibilityAllowTime;
+  }
   enqueue(MessageBody: string): NodeQueue | undefined {
     if (!this.testMessageBody(MessageBody)) return undefined;
     const newNode = new NodeQueue(MessageBody);
