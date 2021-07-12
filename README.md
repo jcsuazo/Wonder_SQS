@@ -8,6 +8,12 @@
 npm install
 ```
 
+## Create a .env file
+
+```
+Create a .env file and set the PORT variable to be your default port i use 5000 E.I. PORT=500
+```
+
 ## Run App
 
 ```
