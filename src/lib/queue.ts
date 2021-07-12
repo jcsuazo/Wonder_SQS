@@ -15,26 +15,26 @@ class NodeQueue {
   }
 }
 class ProcessingQueue {
-  time: number;
+  // time: number;
   first: NodeQueue | null;
   last: NodeQueue | null;
   size: number;
-  visibilityAllowTime: number;
-  messageMax: Number;
+  // visibilityAllowTime: number;
+  // messageMax: Number;
 
   constructor(
     first: NodeQueue,
     last: NodeQueue,
     size: number,
-    visibilityAllowTime: number = 1,
-    messageMax: number = 10,
+    // visibilityAllowTime: number = 1,
+    // messageMax: number = 10,
   ) {
-    this.time = new Date().getTime();
+    // this.time = new Date().getTime();
     this.first = first;
     this.last = last;
     this.size = size;
-    this.visibilityAllowTime = visibilityAllowTime;
-    this.messageMax = messageMax;
+    // this.visibilityAllowTime = visibilityAllowTime;
+    // this.messageMax = messageMax;
   }
 
   dequeue(): NodeQueue | null {
@@ -59,8 +59,8 @@ class ProcessingQueue {
     return new Promise((resolve, rej) => {
       let current = this.first;
       let previous = this.first;
-      let count = 0;
-      while (current && count < this.messageMax) {
+      // let count = 0;
+      while (current) {
         if (current.ReceiptHandle === ReceiptHandle) {
           if (current.MessageId === this.first?.MessageId) {
             this.dequeue();
@@ -81,12 +81,13 @@ class ProcessingQueue {
         }
         previous = current;
         current = current.next;
-        count++;
+        // count++;
       }
       resolve(current);
     });
   }
 }
+
 class Queue {
   first: NodeQueue | null;
   last: NodeQueue | null;
@@ -123,14 +124,14 @@ class Queue {
   }
 
   async dequeue(ReceiptHandle: string): Promise<boolean | NodeQueue> {
-    let visibility = this.checkVisibilityTimeAndUpdateQueue(ReceiptHandle);
-    if (!visibility) {
+    let visibilityTime = this.checkVisibilityTimeAndUpdateQueue(ReceiptHandle);
+    if (!visibilityTime) {
       // console.log('enter1');
       return false;
     }
     let decodeReceiptHandle = ReceiptHandle.split('&');
     let priorityQueueUUID = `${decodeReceiptHandle[0]}&${decodeReceiptHandle[1]}`;
-    let time = decodeReceiptHandle[1];
+    // let time = decodeReceiptHandle[1];
     // console.log(time);
     // console.log(priorityQueueUUID);
     let processingQueue = this.processingQueues[priorityQueueUUID];
@@ -181,52 +182,66 @@ class Queue {
     });
   }
 
-  checkVisibilityTimeAndUpdateQueue(ReceiptHandle: string = '') {
+  checkVisibilityTimeAndUpdateQueue(ReceiptHandle: string = ''): boolean {
     if (ReceiptHandle.length > 0) {
-      // console.log('enter2');
-      // let decodeReceiptHandle
       let decodeReceiptHandle = ReceiptHandle.split('&');
       let priorityQueueUUID = `${decodeReceiptHandle[0]}&${decodeReceiptHandle[1]}`;
-      let time: number = Number(decodeReceiptHandle[1]);
-      let currentTime = new Date().getTime();
-      // console.log((currentTime - time) / 1000, this.visibilityAllowTime);
-      if ((currentTime - time) / 1000 > this.visibilityAllowTime) {
-        let processingQueue = this.processingQueues[priorityQueueUUID];
-        // console.log(processingQueue);
-        // console.log('enter3');
-        let currentFirst = this.first;
-        processingQueue.last.next = currentFirst;
-        processingQueue.last = this.last;
-        this.first = processingQueue.first;
-        delete this.processingQueues[priorityQueueUUID];
-        return false;
-      }
+      return this.checkPriorityQueueAndReset(priorityQueueUUID);
+
+      // let time: number = Number(decodeReceiptHandle[1]);
+      // let currentTime = new Date().getTime();
+      // if ((currentTime - time) / 1000 > this.visibilityAllowTime) {
+      //   let processingQueue = this.processingQueues[priorityQueueUUID];
+      //   let currentFirst = this.first;
+      //   processingQueue.last.next = currentFirst;
+      //   processingQueue.last = this.last;
+      //   this.first = processingQueue.first;
+      //   delete this.processingQueues[priorityQueueUUID];
+      //   return false;
+      // }
     } else {
-      let keys = Object.keys(this.processingQueues);
-      keys.forEach((key) => {
-        let time: number = Number(key.split('&')[1]);
-        let currentTime = new Date().getTime();
-        if ((currentTime - time) / 1000 > this.visibilityAllowTime) {
-          let processingQueue = this.processingQueues[key];
-          let currentFirst = this.first;
-          processingQueue.last.next = currentFirst;
-          processingQueue.last = this.last;
-          this.first = processingQueue.first;
-          delete this.processingQueues[key];
-        }
+      let priorityQueueUUIDS = Object.keys(this.processingQueues);
+      priorityQueueUUIDS.forEach((priorityQueueUUID) => {
+        this.checkPriorityQueueAndReset(priorityQueueUUID);
+        // let time: number = Number(key.split('&')[1]);
+        // let currentTime = new Date().getTime();
+        // if ((currentTime - time) / 1000 > this.visibilityAllowTime) {
+        //   let processingQueue = this.processingQueues[key];
+        //   let currentFirst = this.first;
+        //   processingQueue.last.next = currentFirst;
+        //   processingQueue.last = this.last;
+        //   this.first = processingQueue.first;
+        //   delete this.processingQueues[key];
+        // }
         // console.log(time);
       });
-      let current = this.first;
-      let count = 0;
-      while (current && count < 1000) {
-        // console.log(current.MessageBody);
-        current = current.next;
-        count++;
-      }
+      // let current = this.first;
+      // let count = 0;
+      // while (current && count < 1000) {
+      //   // console.log(current.MessageBody);
+      //   current = current.next;
+      //   count++;
+      // }
       // console.log(this.processingQueues);
       return true;
       // console.log(keys);
       // let current = this.first;
+    }
+    // return true;
+  }
+
+  checkPriorityQueueAndReset(priorityQueueUUID: string): boolean {
+    let time: number = Number(priorityQueueUUID.split('&')[1]);
+    let currentTime = new Date().getTime();
+    if ((currentTime - time) / 1000 > this.visibilityAllowTime) {
+      let processingQueue = this.processingQueues[priorityQueueUUID];
+      let currentFirst = this.first;
+      processingQueue.last.next = currentFirst;
+      processingQueue.last = this.last;
+      this.first = processingQueue.first;
+      this.size = this.size + processingQueue.size;
+      delete this.processingQueues[priorityQueueUUID];
+      return false;
     }
     return true;
   }
