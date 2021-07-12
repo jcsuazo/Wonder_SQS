@@ -135,12 +135,23 @@ class Queue {
     // console.log(time);
     // console.log(priorityQueueUUID);
     let processingQueue = this.processingQueues[priorityQueueUUID];
+    if (!processingQueue) {
+      return false;
+    }
     // console.log(processingQueue);
     let deletedMessage = await processingQueue.dequeueByReceiptHandle(
       ReceiptHandle,
     );
+
+    if (processingQueue.size === 0) {
+      delete this.processingQueues[priorityQueueUUID];
+    }
     return deletedMessage;
     // console.log(deletedMessage);
+  }
+
+  showProcessingQueue() {
+    return this.processingQueues;
   }
 
   getQueueMessageBodies(): Promise<
@@ -281,9 +292,9 @@ class Queue {
 }
 export const queue = new Queue();
 export default Queue;
-// for (let i = 0; i < 250; i++) {
-//   queue.enqueue(`${i}`);
-// }
+for (let i = 0; i < 250; i++) {
+  queue.enqueue(`${i}`);
+}
 // queue.enqueue('2');
 // queue.enqueue('3');
 // queue.enqueue('4');

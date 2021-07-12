@@ -4,7 +4,7 @@ import { queue } from '../lib/queue';
 
 const router = Router();
 
-//@route POST /queue
+//@route POST /
 //@desc Add a message to the queue
 //@access PUBLIC
 router.post('/', (req: Request, res: Response) => {
@@ -16,8 +16,8 @@ router.post('/', (req: Request, res: Response) => {
   //   res.status(201).json({ id: '1', value: 'hello' });
 });
 
-//@route POST /queue
-//@desc Add a message to the queue
+//@route GET /
+//@desc Send messages to a consumer default 10
 //@access PUBLIC
 router.get('/', async (req: Request, res: Response) => {
   // if (!queue.queueVisibility) {
@@ -30,11 +30,14 @@ router.get('/', async (req: Request, res: Response) => {
   // }
   // res.send(klk);
   const queueValues = await queue.getQueueMessageBodies();
+  if (queueValues.length === 0) {
+    return res.status(200).json({ message: 'the queue is empty' });
+  }
   res.status(200).json(queueValues);
 });
 
-//@route DELETE /queue
-//@desc Add a message to the queue
+//@route DELETE /dequeue
+//@desc DELETE  message from the queue
 //@access PUBLIC
 router.delete('/dequeue', async (req: Request, res: Response) => {
   const ReceiptHandle = req.body.ReceiptHandle;
@@ -42,20 +45,20 @@ router.delete('/dequeue', async (req: Request, res: Response) => {
   if (!queueDeleted) {
     res.json({ ErrorId: uuid() });
   } else {
-    res.json(queueDeleted);
+    res.status(202).json(queueDeleted);
     // res.json({ MessageId: queueDeleted.MessageId, MessageBody: queueDeleted.MessageBody });
     // res.json({ MessageId: queueDeleted });
   }
 });
 
-//@route DELETE /queue
-//@desc Add a message to the queue
+//@route GET /migrate
+//@desc Store 250 messages for testing purposes
 //@access PUBLIC
 router.get('/migrate', async (req: Request, res: Response) => {
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < 250; i++) {
     queue.enqueue(`message #${i}`);
   }
-  res.send('done');
+  res.status(201).json({ migrate: 'done' });
 });
 
 //@route DELETE /queue

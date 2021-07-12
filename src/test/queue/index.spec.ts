@@ -116,6 +116,50 @@ describe('queue core functionality', function () {
       });
     });
   });
+
+  it('should allow to delete all messages received ', (done) => {
+    const myQueue = new Queue(15, 10);
+    for (let i = 0; i < 15; i++) {
+      myQueue.enqueue(`test# ${i}`);
+    }
+    let results: string[] = [];
+
+    myQueue
+      .getQueueMessageBodies()
+      .then((consumerMessages) => {
+        for (let i = 0; i < consumerMessages.length; i++) {
+          const message = consumerMessages[i];
+          const ReceiptHandle = message.ReceiptHandle;
+          myQueue
+            .dequeue(ReceiptHandle)
+            .then((deletedMessage: any) => {
+              results.push(deletedMessage.MessageBody);
+              if (i === consumerMessages.length - 1) {
+                expect(results.length).to.equal(15);
+                myQueue
+                  .getQueueMessageBodies()
+                  .then((consumerMessages) => {
+                    expect(consumerMessages.length).to.equal(0);
+                    done(); // success: call done with no parameter to indicate that it() is done()
+                  })
+                  .catch((e) => done(e));
+              }
+            })
+            .catch((e) => done(e));
+        }
+      })
+      .catch((e) => done(e));
+    // const consumerMessages = await myQueue.getQueueMessageBodies();
+    // consumerMessages.forEach(async (message) => {
+    //   message = consumerMessages[5];
+    //   const ReceiptHandle = message.ReceiptHandle;
+    //   const deleteMessage: any = await myQueue.dequeue(ReceiptHandle);
+    //   console.log('enter');
+    //   results.push(deleteMessage.MessageBody);
+    // });
+    // console.log('call');
+    // expect(results.length).to.equal(15);
+  });
 });
 // describe('queue test', () => {
 //   it('/queue responds with 201', (done) => {
